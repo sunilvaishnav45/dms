@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+       
+<tiles-definitions>   
+	<definition name="login" template="/WEB-INF/views/pages/login/login.jsp"></definition>
+	<definition name="unautharised" template="/WEB-INF/views/pages/unautharised/unautharised.jsp"></definition>
+	
+	<definition name="include.addtask" template="/WEB-INF/views/includes/admin/addtask.jsp" preparer="com.dms.viewpreparer.AdminViewPreparer"></definition>
+	<definition name="include.existingtasks" template="/WEB-INF/views/includes/admin/existingtasks.jsp" preparer="com.dms.viewpreparer.AdminViewPreparer"></definition>
+	<definition name="include.taskhistorymodal" template="/WEB-INF/views/includes/admin/taskhistorymodal.jsp"></definition>
+	<definition name="admin" template="/WEB-INF/views/pages/admin/admin.jsp">
+		<put-attribute name="addtask" value="include.addtask"></put-attribute>
+		<put-attribute name="existingtasks" value="include.existingtasks"></put-attribute>
+		<put-attribute name="taskhistorymodal" value="include.taskhistorymodal"></put-attribute>
+	</definition>
+	
+	<definition name="include.tasks" template="/WEB-INF/views/includes/user/tasks.jsp" preparer="com.dms.viewpreparer.UserViewPreparer"></definition>
+	<definition name="include.highprioritytask" template="/WEB-INF/views/includes/user/highprioritytask.jsp" preparer="com.dms.viewpreparer.UserViewPreparer"></definition>
+	<definition name="user" template="/WEB-INF/views/pages/user/user.jsp">
+		<put-attribute name="tasks" value="include.tasks"></put-attribute>
+		<put-attribute name="highprioritytask" value="include.highprioritytask"></put-attribute>
+	</definition>
+</tiles-definitions>

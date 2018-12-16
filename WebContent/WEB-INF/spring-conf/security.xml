@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+ 	http://www.springframework.org/schema/beans/spring-beans.xsd
+ 	http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task.xsd
+ 	http://www.springframework.org/schema/security
+ 	http://www.springframework.org/schema/security/spring-security.xsd
+ 	http://www.springframework.org/schema/websocket
+   	http://www.springframework.org/schema/websocket/spring-websocket-4.0.xsd">
+
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>/WEB-INF/properties/application.properties</value>
+		</property>
+	</bean>
+	
+	<security:http auto-config="false" pattern="/resources/*" security="none"/>
+	
+	<context:component-scan base-package="com.dms.*" />
+	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
+	<context:annotation-config/>
+	
+	<security:http auto-config="true" use-expressions="true">
+		<security:intercept-url pattern="/login*" access="permitAll"/>
+		<security:intercept-url pattern="/**" access="isAuthenticated()"/>
+		<security:form-login login-page='/login' authentication-failure-url="/login?error=true"/>
+		<security:logout logout-url="/logout" invalidate-session="true" logout-success-url="/login"/>
+		<security:csrf disabled="true"/>
+	</security:http>
+	
+    <security:authentication-manager>
+	    <security:authentication-provider ref="customAuthenticationProvider">
+	    </security:authentication-provider>
+	</security:authentication-manager>
+	
+    <bean id="customAuthenticationProvider" class="com.dms.login.filter.CustomAuthenticationProvider">
+    </bean>  
+    
+    <bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/tts" />
+		<property name="username" value="root" />
+	</bean>
+	
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="com.dms.database.mapping"/>
+		<property name="hibernateProperties">
+		    <props>
+				<prop key="hibernate.dialect">${database.hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${database.hibernate.show_sql}</prop>
+		    </props>
+		</property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    	<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
